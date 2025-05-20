@@ -12,11 +12,12 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 axios.defaults.baseURL = "http://localhost:8000";
 root.render(
     <React.StrictMode>
-        <div style={{position: "relative"}}>
-            <Header></Header>
-            <Tabs></Tabs>
-            <ActiveProgramsViewer/>
-            <Footer style={{position: "sticky", bottom:0}}></Footer>
+        <div className="flex flex-col min-h-screen">
+            <Header/>
+            <div className="flex-grow">
+                <Tabs/>
+            </div>
+            <Footer/>
         </div>
     </React.StrictMode>
 );
