@@ -20,7 +20,7 @@ class CategoryAdmin(admin.ModelAdmin):
 class ActiveProgramInline(admin.TabularInline):
     model = ActiveProgram
     fields = ("program", "start_time", "is_active")
-    readonly_fields = ("start_time", "is_active")
+    readonly_fields = ("is_active",)
     extra = 0
     can_delete = False
     show_change_link = True

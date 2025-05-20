@@ -4,29 +4,13 @@ from django.db import models
 from django.utils import timezone
 from django.utils.timezone import now
 
+
 class BaseTimestampedModel(models.Model):
     created = models.DateTimeField(default=now, editable=False)
     modified = models.DateTimeField(auto_now=True)
 
     class Meta:
         abstract = True
-
-
-class Program(models.Model):
-    """ Statically defined programs that sets a name, duration and description for reuseability """
-    name = models.CharField(max_length=63, blank=False, null=False, verbose_name="Program Navn")
-    duration = models.DurationField()
-    description = models.TextField(blank=True)
-
-    class Meta:
-        managed = True
-        app_label = 'device'
-        db_table = "program"
-        verbose_name = "Program"
-        verbose_name_plural = "Programs"
-
-    def __str__(self) -> str:
-        return f"{self.name}({self.duration}) DD:HH:MM:SS"
 
 
 class Category(models.Model):
@@ -44,6 +28,24 @@ class Category(models.Model):
 
     def __str__(self) -> str:
         return f"{self.title}"
+
+
+class Program(models.Model):
+    """ Statically defined programs that sets a name, duration and description for reuseability """
+    name = models.CharField(max_length=63, blank=False, null=False, verbose_name="Program Navn")
+    duration = models.DurationField()
+    description = models.TextField(blank=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="programs")
+
+    class Meta:
+        managed = True
+        app_label = 'device'
+        db_table = "program"
+        verbose_name = "Program"
+        verbose_name_plural = "Programs"
+
+    def __str__(self) -> str:
+        return f"{self.name} {self.category.title}({self.duration}) DD:HH:MM:SS"
 
 
 class IotDevice(models.Model):
@@ -72,7 +74,7 @@ class IotDevice(models.Model):
         return any([prg for prg in ActiveProgram.objects.filter(iot_device=self) if prg.is_active()])
 
     is_occupied.boolean = True
-    is_occupied.short_description = "Currently Running."
+    is_occupied.short_description = "Currently Running"
 
 
 class ActiveProgram(models.Model):
