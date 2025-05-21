@@ -1,11 +1,10 @@
 import axios from "axios";
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import ActiveProgramsViewer from "./App";
 import "./index.css"
 import {Footer} from "./component/footer";
 import {Header} from "./component/header";
-import Tabs from "./component/tabs";
+import TabViewer from "./component/tabViewer";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -15,7 +14,7 @@ root.render(
         <div className="flex flex-col min-h-screen">
             <Header/>
             <div className="flex-grow">
-                <Tabs/>
+                <TabViewer/>
             </div>
             <Footer/>
         </div>

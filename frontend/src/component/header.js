@@ -6,8 +6,6 @@ export const Header = () => {
                 <span className="hidden max-sm:block">NHI IoT Explorer</span>
                 <div className="flex max-lg:ml-auto space-x-4">
                     <ul>
-                        <li><a href="#">Device Logs</a></li>
-                        <li><a href="#">Ledige Enheder</a></li>
                     </ul>
                 </div>
                 <div className="flex max-lg:ml-auto space-x-4">

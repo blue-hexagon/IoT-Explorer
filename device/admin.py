@@ -39,6 +39,6 @@ class IotDeviceAdmin(admin.ModelAdmin):
 class ActiveProgramAdmin(admin.ModelAdmin):
     list_display = ("id", "iot_device", "program", "start_time", "is_active")
     search_fields = ("iot_device__hostname", "program__name")
-    list_filter = ("program", "iot_device")
-    readonly_fields = ("start_time", "is_active")
+    list_filter = ("program", "iot_device","start_time")
+    readonly_fields = ("is_active",)
     ordering = ("-start_time",)

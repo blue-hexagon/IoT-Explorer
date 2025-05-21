@@ -2,62 +2,63 @@ import React, {useEffect, useState} from "react";
 import {FaRegCalendarCheck} from "react-icons/fa";
 import {IoCalendarNumberSharp} from "react-icons/io5";
 import {FaRegClock} from "react-icons/fa";
-import ActiveProgramsViewer from "../App";
+import Programs from "./programs";
 
-export default function Tabs() {
-
+export default function TabViewer() {
     useEffect(() => {
-        let tabs = document.querySelectorAll('.tab');
-        let contents = document.querySelectorAll('.tab-content');
+        const tabs = document.querySelectorAll('.tab');
+        const contents = document.querySelectorAll('.tab-content');
 
-        tabs.forEach(function (tab) {
-            tab.addEventListener('click', function (e) {
-                let targetId = tab.id.replace('Tab', 'Content');
-                contents.forEach(function (content) {
-                    content.classList.add('hidden');
-                });
-                tabs.forEach(function (tab) {
-                    tab.classList.remove('border-b-transparent');
-                });
-                document.getElementById(targetId).classList.remove('hidden');
-                document.getElementById(targetId).classList.add('block');
-                tab.classList.add('border-b-transparent');
-            });
-        });
-    });
+        function handleClick(e) {
+            const targetId = this.id.replace('Tab', 'Content');
+
+            contents.forEach(c => c.classList.add('hidden'));
+            tabs.forEach(t => t.classList.remove('border-b-transparent'));
+
+            document.getElementById(targetId).classList.remove('hidden');
+            this.classList.add('border-b-transparent');
+        }
+
+        tabs.forEach(tab => tab.addEventListener('click', handleClick));
+
+        return () => {
+            tabs.forEach(tab => tab.removeEventListener('click', handleClick));
+        };
+    }, []);
+    
 
     return (
         <div className="pt-4  mb-auto ">
             <div className="bg-white border-2 border-gray-300 w-8/12 centered flex-grow mx-auto">
                 <ul className="flex divide-x-2">
-                    <li id="doneProgramsTab"
+                    <li id="pastProgramsTab"
                         className="tab text-slate-900 flex flex-col items-center justify-center font-semibold border-b-2 border-b-transparent w-full text-sm py-3 px-6 cursor-pointer">
                         {<FaRegCalendarCheck size={48}/>}
                         Udførte Programmer
                     </li>
-                    <li id="currentProgramsTab"
+                    <li id="presentProgramsTab"
                         className="tab text-slate-900 flex flex-col items-center justify-center font-semibold border-b-2 border-gray-200 w-full text-sm py-3 px-6 cursor-pointer">
                         <FaRegClock size={48}/>
                         Kørende Programmer
                     </li>
-                    <li id="pastProgramsTab"
+                    <li id="futureProgramsTab"
                         className="tab text-slate-900 flex flex-col items-center justify-center font-semibold border-b-2 border-gray-200 w-full text-sm py-3 px-6 cursor-pointer">
                         <IoCalendarNumberSharp size={48}/>
                         Planlagte Programmer
                     </li>
                 </ul>
 
-                <div id="doneProgramsContent" className="tab-content px-6 py-12 block">
+                <div id="pastProgramsContent" className="tab-content px-6 py-12 block">
                     <h3 className="text-base font-semibold text-slate-900"></h3>
-                    <ActiveProgramsViewer type={"past"}></ActiveProgramsViewer>
+                    <Programs type={"past"}></Programs>
                 </div>
-                <div id="currentProgramsContent" className="tab-content px-6 py-12 hidden">
+                <div id="presentProgramsContent" className="tab-content px-6 py-12 hidden">
                     <h3 className="text-base font-semibold text-slate-900"></h3>
-                    <ActiveProgramsViewer type={"current"}></ActiveProgramsViewer>
+                    <Programs type={"present"}></Programs>
                 </div>
-                <div id="pastProgramsContent" className="tab-content px-6 py-12 hidden">
+                <div id="futureProgramsContent" className="tab-content px-6 py-12 hidden">
                     <h3 className="text-base font-semibold text-slate-900"></h3>
-                    <ActiveProgramsViewer type={"previous"}></ActiveProgramsViewer>
+                    <Programs type={"future"}></Programs>
                 </div>
             </div>
         </div>

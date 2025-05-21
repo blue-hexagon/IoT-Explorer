@@ -1,4 +1,6 @@
 import uuid
+
+import django
 from django.db import models
 
 from django.utils import timezone
@@ -45,7 +47,7 @@ class Program(models.Model):
         verbose_name_plural = "Programs"
 
     def __str__(self) -> str:
-        return f"{self.name} {self.category.title}({self.duration}) DD:HH:MM:SS"
+        return f"{self.name} {self.category.title}({self.duration})"
 
 
 class IotDevice(models.Model):
@@ -79,7 +81,7 @@ class IotDevice(models.Model):
 
 class ActiveProgram(models.Model):
     iot_device = models.ForeignKey(IotDevice, on_delete=models.CASCADE, related_name="active_programs")
-    start_time = models.DateTimeField(auto_now_add=True)
+    start_time = models.DateTimeField(default=django.utils.timezone.now)
     program = models.ForeignKey(Program, on_delete=models.CASCADE)
 
     class Meta:
@@ -98,4 +100,4 @@ class ActiveProgram(models.Model):
     is_active.boolean = True
 
     def __str__(self):
-        return f"{self.iot_device.hostname} - {self.program.name} ({self.program.duration})"
+        return f"{self.iot_device.hostname} | {self.program.name} | ({self.program.duration})"
