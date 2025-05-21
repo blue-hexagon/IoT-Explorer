@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import {RingLoader} from "react-spinners";
+import {GrClear} from "react-icons/gr";
 
 export default function Programs(props) {
     const [programs, setPrograms] = useState([]);
@@ -20,7 +21,6 @@ export default function Programs(props) {
                 res.data.forEach((res) => {
                     const startTime = new Date(res.start_time);
                     const endTime = new Date(startTime.getTime()) + parseDuration(res.program.duration);
-                    console.log(res)
                     console.debug(res)
                     if (props.type === "present" && startTime <= now && now <= endTime) {
                         //present
@@ -28,7 +28,7 @@ export default function Programs(props) {
                     } else if (props.type === "future" && startTime > now) {
                         //future
                         arr.push(res);
-                    } else if (props.type === "past") {
+                    } else if (props.type === "past" && startTime < now) {
                         //past
                         arr.push(res);
                     }
@@ -55,28 +55,32 @@ export default function Programs(props) {
         }
     }
 
-    function EndTime({start, duration}) {
-        const startMs = new Date(start).getTime();
-        const end = new Date(startMs + parseDuration(duration));
-
-        return <p>Sluttid: {end.toLocaleString("da-DK")}</p>;
-    }
 
     return (
         <>
             <div className="p-6 max-w-4xl mx-auto">
                 <ul className="mb-8 space-y-2">
                     {loading ? (
-                        <div className="flex justify-center"><RingLoader color="#a9a" size={80}/></div>
+                        <div className="flex justify-center">
+                            <RingLoader color="#a9a" size={80}/>
+                        </div>
+                    ) : programs.length === 0 ? (
+
+                        <div className="border border-dashed border-gray-400 p-12 rounded text-center text-gray-600">
+                                <div className="text-xl">Ingen programmer fundet.</div>
+                        </div>
                     ) : (
-                        programs.map((res) => (
-                            <li key={res.program.name} className="border p-3 rounded">
-                                <strong>{res.program.name}</strong> | <em>{res.iot_device.hostname}</em>
-                                <br/> Varighed: {res.program.duration}
-                                <br/> Start: {new Date(res.start_time).toLocaleString("da-DK")}
-                                <br/> Slut: {new Date(new Date(res.start_time).getTime() + parseDuration(res.program.duration)).toLocaleString('da-DK')}
-                            </li>
-                        )))}
+                        <ul className="space-y-3">
+                            {programs.map((res) => (
+                                <li key={res.program.name} className="border p-3 rounded">
+                                    <strong>{res.program.name}</strong> | <em>{res.iot_device.hostname}</em>
+                                    <br/> Varighed: {res.program.duration}
+                                    <br/> Start: {new Date(res.start_time).toLocaleString("da-DK")}
+                                    <br/> Slut: {new Date(new Date(res.start_time).getTime() + parseDuration(res.program.duration)).toLocaleString("da-DK")}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </ul>
                 <div className="flex justify-center">
                     <div className="inline-flex">
