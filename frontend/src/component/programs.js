@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import axios from "axios";
 import {RingLoader} from "react-spinners";
 import {GrClear} from "react-icons/gr";
+import {FiClock, FiCalendar, FiPlayCircle, FiCheckCircle} from 'react-icons/fi';
 
 export default function Programs(props) {
     const [programs, setPrograms] = useState([]);
@@ -14,8 +15,8 @@ export default function Programs(props) {
             }, 2000);
             try {
                 const res = await axios.get("/active-programs/");
+                console.log(res)
                 const now = new Date();
-
                 const arr = [];
 
                 res.data.forEach((res) => {
@@ -55,6 +56,28 @@ export default function Programs(props) {
         }
     }
 
+    function ProgramInfo({api_response}) {
+        const {program, start_time} = api_response;
+        const start = new Date(start_time);
+        const end = new Date(new Date(start_time).getTime() + parseDuration(program.duration));
+
+        return (
+            <div className="text-sm space-y-1">
+                <div className="flex items-center gap-2">
+                    <FiClock className="text-gray-500"/>
+                    <span>Varighed: {program.duration}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <FiPlayCircle className="text-green-600"/>
+                    <span>Start: {start.toLocaleString("da-DK")}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <FiCheckCircle className="text-blue-600"/>
+                    <span>Slut: {end.toLocaleString("da-DK")}</span>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <>
@@ -67,16 +90,21 @@ export default function Programs(props) {
                     ) : programs.length === 0 ? (
 
                         <div className="border border-dashed border-gray-400 p-12 rounded text-center text-gray-600">
-                                <div className="text-xl">Ingen programmer fundet.</div>
+                            <div className="text-xl">Ingen programmer fundet.</div>
                         </div>
                     ) : (
                         <ul className="space-y-3">
                             {programs.map((res) => (
                                 <li key={res.program.name} className="border p-3 rounded">
-                                    <strong>{res.program.name}</strong> | <em>{res.iot_device.hostname}</em>
-                                    <br/> Varighed: {res.program.duration}
-                                    <br/> Start: {new Date(res.start_time).toLocaleString("da-DK")}
-                                    <br/> Slut: {new Date(new Date(res.start_time).getTime() + parseDuration(res.program.duration)).toLocaleString("da-DK")}
+                                    <div className="flex justify-between">
+                                        <div>
+                                            <strong>{res.program.name}</strong>
+                                        </div>
+                                        <div>
+                                            <strong>{res.program.iot_device.hostname}</strong>
+                                        </div>
+                                    </div>
+                                    <ProgramInfo api_response={res}></ProgramInfo>
                                 </li>
                             ))}
                         </ul>

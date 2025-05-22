@@ -1,17 +1,18 @@
 from rest_framework import viewsets
 
-from device.models import Program, ActiveProgram, Category, IotDevice
-from device.serializers import ProgramSerializer, CategorySerializer, ActiveProgramSerializer, IotDeviceSerializer
+from device.models import Program, ProgramInstance, Category, IotDevice
+from device.serializers import ProgramSerializer, CategorySerializer, ProgramInstanceSerializer, IotDeviceSerializer
 
 
 class ProgramViewSet(viewsets.ModelViewSet):
     queryset = Program.objects.all()
     serializer_class = ProgramSerializer
+    
 
 
-class ActiveProgramViewSet(viewsets.ModelViewSet):
-    queryset = ActiveProgram.objects.all()
-    serializer_class = ActiveProgramSerializer
+class ProgramInstanceViewSet(viewsets.ModelViewSet):
+    queryset = ProgramInstance.objects.all()
+    serializer_class = ProgramInstanceSerializer
 
 
 class CategoryViewSet(viewsets.ModelViewSet):

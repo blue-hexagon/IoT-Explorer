@@ -1,10 +1,10 @@
 from django.contrib import admin
-from .models import Program, Category, IotDevice, ActiveProgram
+from .models import Program, Category, IotDevice, ProgramInstance
 
 
 @admin.register(Program)
 class ProgramAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "duration")
+    list_display = ("id", "name", "duration","iot_device")
     search_fields = ("name", "description")
     ordering = ("name",)
     list_filter = ("duration",)
@@ -12,13 +12,13 @@ class ProgramAdmin(admin.ModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ("id", "title", "purpose")
+    list_display = ("id", "abbreviation","title", "purpose")
     search_fields = ("title", "purpose", "help_text")
     ordering = ("title",)
 
 
-class ActiveProgramInline(admin.TabularInline):
-    model = ActiveProgram
+class ProgramInstanceInline(admin.TabularInline):
+    model = ProgramInstance
     fields = ("program", "start_time", "is_active")
     readonly_fields = ("is_active",)
     extra = 0
@@ -32,13 +32,13 @@ class IotDeviceAdmin(admin.ModelAdmin):
     search_fields = ("hostname",)
     list_filter = ("category",)
     ordering = ("hostname",)
-    inlines = [ActiveProgramInline]
+    # inlines = [ProgramInstanceInline]
 
 
-@admin.register(ActiveProgram)
-class ActiveProgramAdmin(admin.ModelAdmin):
-    list_display = ("id", "iot_device", "program", "start_time", "is_active")
-    search_fields = ("iot_device__hostname", "program__name")
-    list_filter = ("program", "iot_device","start_time")
+@admin.register(ProgramInstance)
+class ProgramInstanceAdmin(admin.ModelAdmin):
+    list_display = ("id", "program", "start_time", "is_active")
+    search_fields = ("program__name",)
+    list_filter = ("program","start_time")
     readonly_fields = ("is_active",)
     ordering = ("-start_time",)

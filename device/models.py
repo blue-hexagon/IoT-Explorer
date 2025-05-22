@@ -18,6 +18,7 @@ class BaseTimestampedModel(models.Model):
 class Category(models.Model):
     """ Statically defined categories used for classifying iot-devices """
     title = models.CharField(max_length=63, blank=False, null=False, verbose_name="Kategori Titel")
+    abbreviation = models.CharField(max_length=8,unique=True, blank=False, null=False, verbose_name="Kategori Forkortelse")
     purpose = models.CharField(max_length=400, blank=True, null=False)
     help_text = models.CharField(max_length=400, blank=True, null=False)
 
@@ -29,25 +30,7 @@ class Category(models.Model):
         verbose_name_plural = "Categories"
 
     def __str__(self) -> str:
-        return f"{self.title}"
-
-
-class Program(models.Model):
-    """ Statically defined programs that sets a name, duration and description for reuseability """
-    name = models.CharField(max_length=63, blank=False, null=False, verbose_name="Program Navn")
-    duration = models.DurationField()
-    description = models.TextField(blank=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="programs")
-
-    class Meta:
-        managed = True
-        app_label = 'device'
-        db_table = "program"
-        verbose_name = "Program"
-        verbose_name_plural = "Programs"
-
-    def __str__(self) -> str:
-        return f"{self.name} {self.category.title}({self.duration})"
+        return f"[{self.abbreviation}]: {self.title}"
 
 
 class IotDevice(models.Model):
@@ -69,27 +52,44 @@ class IotDevice(models.Model):
         verbose_name_plural = "IoT Devices"
 
     def __str__(self) -> str:
-        return f"{self.hostname}"
+        return f"[{self.category.abbreviation}]: {self.hostname}"
 
     def is_occupied(self) -> bool:
         """ Returns True if one or more programs are running on the device """
-        return any([prg for prg in ActiveProgram.objects.filter(iot_device=self) if prg.is_active()])
+        return any([prg for prg in ProgramInstance.objects.filter(iot_device=self) if prg.is_active()])
 
     is_occupied.boolean = True
     is_occupied.short_description = "Currently Running"
 
 
-class ActiveProgram(models.Model):
-    iot_device = models.ForeignKey(IotDevice, on_delete=models.CASCADE, related_name="active_programs")
+class Program(models.Model):
+    """ Statically defined programs that sets a name, duration and description for reuseability """
+    name = models.CharField(max_length=63, blank=False, null=False, verbose_name="Program Navn")
+    duration = models.DurationField()
+    description = models.TextField(blank=True)
+    iot_device = models.ForeignKey(IotDevice, on_delete=models.CASCADE, related_name="iot_devices")
+
+    class Meta:
+        managed = True
+        app_label = 'device'
+        db_table = "program"
+        verbose_name = "Program"
+        verbose_name_plural = "Programs"
+
+    def __str__(self) -> str:
+        return f"[{self.iot_device.category.abbreviation}:{self.duration}]: {self.name}"
+
+
+class ProgramInstance(models.Model):
     start_time = models.DateTimeField(default=django.utils.timezone.now)
     program = models.ForeignKey(Program, on_delete=models.CASCADE)
 
     class Meta:
         managed = True
         app_label = 'device'
-        db_table = "active_program"
-        verbose_name = "Active Program"
-        verbose_name_plural = "Active Programs"
+        db_table = "program_instance"
+        verbose_name = "Program Instance"
+        verbose_name_plural = "Programs Instances"
         ordering = ['-start_time']
 
     def is_active(self):
@@ -100,4 +100,4 @@ class ActiveProgram(models.Model):
     is_active.boolean = True
 
     def __str__(self):
-        return f"{self.iot_device.hostname} | {self.program.name} | ({self.program.duration})"
+        return f"{self.program.iot_device.hostname}: {self.program.name}"

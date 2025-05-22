@@ -4,11 +4,11 @@ from django.views.decorators.cache import never_cache
 from django.views.generic import TemplateView
 from rest_framework import routers
 
-from device.views import ProgramViewSet, ActiveProgramViewSet, CategoryViewSet, IotDeviceViewSet
+from device.views import ProgramViewSet, ProgramInstanceViewSet, CategoryViewSet, IotDeviceViewSet
 
 router = routers.DefaultRouter()
 router.register(r'programs', ProgramViewSet)
-router.register(r'active-programs', ActiveProgramViewSet)
+router.register(r'active-programs', ProgramInstanceViewSet)
 router.register(r'categories', CategoryViewSet)
 router.register(r'iot-device', IotDeviceViewSet)
 

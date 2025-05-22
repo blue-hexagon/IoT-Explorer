@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from device.models import Category, IotDevice, ActiveProgram, Program
+from device.models import Category, IotDevice, ProgramInstance, Program
 
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
@@ -8,13 +8,6 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
         model = Category
         fields = '__all__'
 
-
-class ProgramSerializer(serializers.HyperlinkedModelSerializer):
-    category = CategorySerializer()
-
-    class Meta:
-        model = Program
-        fields = '__all__'
 
 
 class IotDeviceSerializer(serializers.HyperlinkedModelSerializer):
@@ -24,11 +17,16 @@ class IotDeviceSerializer(serializers.HyperlinkedModelSerializer):
         model = IotDevice
         fields = '__all__'
 
-
-class ActiveProgramSerializer(serializers.HyperlinkedModelSerializer):
-    program = ProgramSerializer()
+class ProgramSerializer(serializers.HyperlinkedModelSerializer):
     iot_device = IotDeviceSerializer()
+    class Meta:
+        model = Program
+        fields = '__all__'
+
+
+class ProgramInstanceSerializer(serializers.HyperlinkedModelSerializer):
+    program = ProgramSerializer()
 
     class Meta:
-        model = ActiveProgram
+        model = ProgramInstance
         fields = '__all__'
